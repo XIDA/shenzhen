@@ -1,0 +1,75 @@
+#!/bin/bash
+
+echo ""
+
+IPA_BASENAME="${1}"
+if (( ${#IPA_BASENAME} > 0 )) ; then IPA_BASENAME="$(basename ${IPA_BASENAME} .ipa)"; fi
+INFO_PLIST_BASENAME="${2}"
+if (( ${#INFO_PLIST_BASENAME} > 0 )) ; then INFO_PLIST_BASENAME="$(basename ${INFO_PLIST_BASENAME} .plist)"; fi
+
+PAYLOAD_DIRNAME="Payload"
+PLISTBUDDY_FILEPATH="/usr/libexec/PlistBuddy"
+
+if (( ${#IPA_BASENAME} <= 0 )) ; then
+	ipaFilePaths=( $(find -E . -regex '.*(ipa)' -maxdepth 1) )
+	ipaFiles=()
+	for i in "${ipaFilePaths[@]}"
+	do :
+		ipaFiles+=($(basename $i))
+	done
+	
+	if (( ${#ipaFiles[@]} <= 0 )) ; then
+		echo "No ipa file found."
+		exit
+	elif (( ${#ipaFiles[@]} <= 1 )) ; then
+		IPA_BASENAME=$(basename ${ipaFiles[0]} .ipa)
+	else
+		echo "Select an .ipa file:"
+		select opt in "${ipaFiles[@]}"
+		do
+			validOption=false
+			for i in "${ipaFiles[@]}"
+			do :
+			   	if [ "${opt}" == "${i}" ] ; then
+			   		validOption=true
+			   		break
+			   	fi
+			done
+			if [ $validOption = true ] ; then
+				IPA_BASENAME=$(basename ${opt} .ipa)
+				break
+			fi
+			echo "Select a valid option"
+		done
+	fi
+fi
+
+IPA_FILENAME="${IPA_BASENAME}.ipa"
+
+echo "Unzipping \"${IPA_FILENAME}\"..."
+unzip -o "${IPA_FILENAME}" > /dev/null || exit;
+cd "${PAYLOAD_DIRNAME}/" || exit;
+appFiles=( $(find -E . -regex '.*(app)' -maxdepth 1) )
+cd ${appFiles[0]} || exit
+
+echo "Appending version number..."
+if (( ${#INFO_PLIST_BASENAME} <= 0 )) ; then
+	plistFiles=( $(find -E . -regex '.*(plist)' -maxdepth 1) )
+	INFO_PLIST_FILENAME=${plistFiles[0]}
+else
+	INFO_PLIST_FILENAME="${INFO_PLIST_BASENAME}.plist"
+fi
+CFBundleVersion="$(${PLISTBUDDY_FILEPATH} -c 'Print CFBundleVersion' ${INFO_PLIST_FILENAME})" || exit;
+cd "../../" || exit;
+rm -rf "${PAYLOAD_DIRNAME}" || exit;
+
+echo "Appending svn version number..."
+SVNFullVersion="$(svnversion)"
+read SVNVersion Component2 <<< $(IFS=":"; echo $SVNFullVersion) || exit;
+read SVNVersion Component2 <<< $(IFS="M"; echo $SVNVersion) || exit;
+
+IPA_FILENAME_NEW="${IPA_BASENAME}_${CFBundleVersion}.${SVNVersion}.ipa"
+
+mv "${IPA_FILENAME}" "${IPA_FILENAME_NEW}" || exit;
+echo "Renamed file \"${IPA_FILENAME}\" to \"${IPA_FILENAME_NEW}\"."
+echo ""

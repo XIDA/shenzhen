@@ -1,0 +1,34 @@
+#!/bin/bash
+
+DEFAULT_HOST=""
+DEFAULT_USERNAME=""
+DEFAULT_PASSWORD=""
+DEFAULT_REMOTE_DIR="/"
+DEFAULT_LOCAL_DIR=""
+
+HOST=${1}
+USERNAME=${2}
+PASSWORD=${3}
+REMOTE_DIR=${4}
+LOCAL_DIR=${5}
+
+if (( ${#HOST} <= 0 )) ; then HOST=${DEFAULT_HOST}; fi
+if (( ${#USERNAME} <= 0 )) ; then USERNAME=${DEFAULT_USERNAME}; fi
+if (( ${#PASSWORD} <= 0 )) ; then PASSWORD=${DEFAULT_PASSWORD}; fi
+if (( ${#REMOTE_DIR} <= 0 )) ; then REMOTE_DIR=${DEFAULT_REMOTE_DIR}; fi
+if (( ${#LOCAL_DIR} <= 0 )) ; then LOCAL_DIR=${DEFAULT_LOCAL_DIR}; fi
+
+cd "${LOCAL_DIR}"
+
+echo
+echo "Building ipa..."
+ipa build || exit
+echo
+
+echo "Renaming ipa..."
+ipa_rename || exit
+echo
+
+echo "Uploading ipa to ftp \"${HOST}\"..."
+ipa distribute:ftp --host "${HOST}" -u "${USERNAME}" -p "${PASSWORD}" -P "${REMOTE_DIR}" || exit
+echo

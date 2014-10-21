@@ -76,7 +76,7 @@ command :build do |c|
     say_error "App settings could not be found." and abort unless @xcodebuild_settings
 
     @app_path = File.join(@xcodebuild_settings['BUILT_PRODUCTS_DIR'], @xcodebuild_settings['WRAPPER_NAME'])
-    @dsym_path = @app_path + ".dSYM"
+#@dsym_path = @app_path + ".dSYM"
     @dsym_filename = File.expand_path("#{@xcodebuild_settings['WRAPPER_NAME']}.dSYM", @destination)
     @ipa_name = @xcodebuild_settings['WRAPPER_NAME'].gsub(@xcodebuild_settings['WRAPPER_SUFFIX'], "") + ".ipa"
     @ipa_path = File.expand_path(@ipa_name, @destination)
@@ -84,8 +84,8 @@ command :build do |c|
     log "xcrun", "PackageApplication"
     abort unless system %{xcrun -sdk #{@sdk} PackageApplication -v "#{@app_path}" -o "#{@ipa_path}" --embed "#{options.embed || @dsym_path}" #{"-s \"#{options.identity}\"" if options.identity} #{'1> /dev/null' unless $verbose}}
 
-    log "zip", @dsym_filename
-    abort unless system %{cp -r "#{@dsym_path}" "#{@destination}" && zip -r "#{@dsym_filename}.zip" "#{@dsym_filename}" #{'> /dev/null' unless $verbose} && rm -rf "#{@dsym_filename}"}
+#log "zip", @dsym_filename
+#abort unless system %{cp -r "#{@dsym_path}" "#{@destination}" && zip -r "#{@dsym_filename}.zip" "#{@dsym_filename}" #{'> /dev/null' unless $verbose} && rm -rf "#{@dsym_filename}"}
 
     say_ok "#{@ipa_path} successfully built"
   end

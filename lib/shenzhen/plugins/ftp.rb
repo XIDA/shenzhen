@@ -114,13 +114,15 @@ command :'distribute:ftp' do |c|
   c.option '--[no-]mkdir', "Create directories on FTP if they don't already exist"
 
   c.action do |args, options|
-    options.default :mkdir => true
+    options.default :mkdir => false
 
     determine_file! unless @file = options.file
     say_error "Missing or unspecified .ipa file" and abort unless @file and File.exist?(@file)
 
+=begin
     determine_dsym! unless @dsym = options.dsym
     say_warning "Specified dSYM.zip file doesn't exist" unless @dsym and File.exist?(@dsym)
+=end
 
     determine_host! unless @host = options.host
     say_error "Missing FTP host" and abort unless @host

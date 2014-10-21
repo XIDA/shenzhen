@@ -1,0 +1,65 @@
+#!/bin/bash
+
+GEMSPEC_BASENAME="${1}"
+if (( ${#GEMSPEC_BASENAME} > 0 )) ; then GEMSPEC_BASENAME="$(basename ${GEMSPEC_BASENAME} .gemspec)"; fi
+
+
+if (( ${#GEMSPEC_BASENAME} <= 0 )) ; then
+	cd $(dirname $0)
+	gemspecFilePaths=( $(find -E . -regex '.*(gemspec)' -maxdepth 1) )
+	GEMSPEC_FILENAME=${gemspecFilePaths[0]}
+else
+	GEMSPEC_FILENAME="${GEMSPEC_BASENAME}.gemspec"
+fi
+
+echo
+read -p "Would you like to build the gemspec file \"${GEMSPEC_FILENAME}\"? (Y/N): " -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+	gem build "${GEMSPEC_FILENAME}"
+fi
+
+if (( ${#GEMSPEC_BASENAME} <= 0 )) ; then
+	cd $(dirname $0)
+	gemspecFilePaths=( $(find -E . -regex '.*(gemspec)' -maxdepth 1) )
+	GEMSPEC_FILENAME=${gemspecFilePaths[0]}
+else
+	GEMSPEC_FILENAME="${GEMSPEC_BASENAME}.gemspec"
+fi
+
+gemFilePaths=( $(find -E . -regex '.*(gem)' -maxdepth 1) )
+GEM_FILENAME=${gemFilePaths[0]}
+
+if (( ${#GEM_FILENAME} <= 0 )) ; then
+	echo
+	echo "No gem file found. Skipping gem install..."
+else
+	echo
+	read -p "Would you like to install the gem file \"${GEM_FILENAME}\"? (Y/N): " -r
+	echo    # (optional) move to a new line
+	if [[ $REPLY =~ ^[Yy]$ ]]
+	then
+		echo
+		echo "Installing \"${GEM_FILENAME}\" (This will take a few moments)..."
+		gem install "${GEM_FILENAME}" || exit
+		echo ""
+	fi
+fi
+
+BIN_PATH="$(dirname $0)/bin/"
+SYS_BIN_PATH="/usr/bin/"
+
+echo
+read -p "Would you like to copy all executables in \"${BIN_PATH}\" to \"${SYS_BIN_PATH}\"? (Y/N): " -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+	cp -R "${BIN_PATH}/." ${SYS_BIN_PATH} || exit
+    echo
+    echo "Successfully copied all executables from \"${BIN_PATH}\" to \"${SYS_BIN_PATH}\""
+else
+	echo
+	echo "Install canceled."
+fi
+echo

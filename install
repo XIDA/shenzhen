@@ -51,7 +51,7 @@ BIN_PATH="$(dirname $0)/bin/"
 SYS_BIN_PATH="/usr/bin/"
 
 echo
-read -p "Would you like to copy all executables in \"${BIN_PATH}\" to \"${SYS_BIN_PATH}\"? (Y/N): " -r
+read -p "Would you like to copy all executables in \"${BIN_PATH}\" to \"${SYS_BIN_PATH}\"? This is necessary to use some of the executable files correctly! (Y/N): " -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then

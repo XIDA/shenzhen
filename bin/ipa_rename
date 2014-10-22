@@ -68,7 +68,7 @@ SVNFullVersion="$(svnversion)"
 read SVNVersion Component2 <<< $(IFS=":"; echo $SVNFullVersion) || exit;
 read SVNVersion Component2 <<< $(IFS="M"; echo $SVNVersion) || exit;
 
-IPA_FILENAME_NEW="${IPA_BASENAME}_${CFBundleVersion}.${SVNVersion}.ipa"
+IPA_FILENAME_NEW="${IPA_BASENAME}_v${CFBundleVersion}.${SVNVersion}.ipa"
 
 mv "${IPA_FILENAME}" "${IPA_FILENAME_NEW}" || exit;
 echo "Renamed file \"${IPA_FILENAME}\" to \"${IPA_FILENAME_NEW}\"."

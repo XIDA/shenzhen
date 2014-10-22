@@ -56,10 +56,22 @@ echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 	cp -R "${BIN_PATH}/." ${SYS_BIN_PATH} || exit
-    echo
-    echo "Successfully copied all executables from \"${BIN_PATH}\" to \"${SYS_BIN_PATH}\""
+    	echo "Successfully copied all executables from \"${BIN_PATH}\" to \"${SYS_BIN_PATH}\"."
 else
-	echo
-	echo "Install canceled."
+	echo "Install of executables in \"${BIN_PATH}\" canceled."
+fi
+echo
+
+LOCAL_BIN_PATH="$(dirname $0)/local/bin/"
+SYS_LOCAL_BIN_PATH="/usr/local/bin/"
+
+read -p "Would you like to copy all executables in \"${LOCAL_BIN_PATH}\" to \"${SYS_LOCAL_BIN_PATH}\"? (Y/N): " -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+	cp -R "${LOCAL_BIN_PATH}/." ${SYS_LOCAL_BIN_PATH} || exit
+    	echo "Successfully copied all executables from \"${LOCAL_BIN_PATH}\" to \"${SYS_LOCAL_BIN_PATH}\"."
+else
+	echo "Install of executables in \"${LOCAL_BIN_PATH}\" canceled."
 fi
 echo

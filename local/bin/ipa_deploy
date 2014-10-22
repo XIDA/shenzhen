@@ -1,0 +1,21 @@
+#!/bin/bash
+
+DEFAULT_HOST="HOST_HERE"
+DEFAULT_USERNAME="USERNAME_HERE"
+DEFAULT_PASSWORD=""
+DEFAULT_REMOTE_DIR=""
+DEFAULT_LOCAL_DIR=""
+
+PASSWORD=${1}
+REMOTE_DIR=${2}
+USERNAME=${3}
+HOST=${4}
+LOCAL_DIR=${5}
+
+if (( ${#HOST} <= 0 )) ; then HOST=${DEFAULT_HOST}; fi
+if (( ${#USERNAME} <= 0 )) ; then USERNAME=${DEFAULT_USERNAME}; fi
+if (( ${#PASSWORD} <= 0 )) ; then PASSWORD=${DEFAULT_PASSWORD}; fi
+if (( ${#REMOTE_DIR} <= 0 )) ; then REMOTE_DIR=${DEFAULT_REMOTE_DIR}; fi
+if (( ${#LOCAL_DIR} <= 0 )) ; then LOCAL_DIR=${DEFAULT_LOCAL_DIR}; fi
+
+ipa_auto "${HOST}" "${USERNAME}" "${PASSWORD}" "${REMOTE_DIR}" "${LOCAL_DIR}"
